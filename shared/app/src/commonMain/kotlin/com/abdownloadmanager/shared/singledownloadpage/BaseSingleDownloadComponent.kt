@@ -146,14 +146,16 @@ abstract class BaseSingleDownloadComponent<
         _showPartInfo.value = value
     }
 
-    fun openFolder() {
+    fun openFolder(alsoClose: Boolean = true) {
         val itemState = itemStateFlow.value
         applicationScope.launch {
             if (itemState is CompletedDownloadItemState) {
                 downloadItemOpener.openDownloadItemFolder(downloadId)
             }
         }
-        onDismiss()
+        if (alsoClose) {
+            onDismiss()
+        }
     }
 
     fun openFile(

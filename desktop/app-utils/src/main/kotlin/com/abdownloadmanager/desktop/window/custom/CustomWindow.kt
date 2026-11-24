@@ -3,7 +3,6 @@ package com.abdownloadmanager.desktop.window.custom
 import com.abdownloadmanager.shared.util.ui.WithContentColor
 import ir.amirab.util.compose.IconSource
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.gestures.waitForUpOrCancellation
@@ -13,7 +12,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.awt.toAwtColor
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.takeOrElse
@@ -46,7 +44,6 @@ import com.jetbrains.WindowMove
 import ir.amirab.util.desktop.LocalFrameWindowScope
 import com.abdownloadmanager.shared.ui.util.LocalWindow
 import ir.amirab.util.desktop.screen.applyUiScale
-import ir.amirab.util.ifThen
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.isActive
@@ -67,23 +64,16 @@ private fun FrameWindowScope.CustomWindowFrame(
     windowIcon: Painter? = null,
     background: Color,
     onBackground: Color,
-    isLight: Boolean,
     start: (@Composable () -> Unit)?,
     end: (@Composable () -> Unit)?,
     content: @Composable () -> Unit,
 ) {
-//    val borderColor = MaterialTheme.colors.surface
     WithContentColor(onBackground) {
         Column(
             Modifier
                 .fillMaxSize()
-                .ifThen(!JBR.isWindowDecorationsSupported()) {
-                    ifThen(isWindowFloating()) {
-                        val borderColor = if (isLight) Color.LightGray else Color.DarkGray
-                        border(1.dp, borderColor, RectangleShape)
-                            .padding(1.dp)
-                    }
-                }
+                // Paint the theme background across the whole window and draw no outer
+                // border/stroke, so the window edges blend seamlessly with the content.
                 .background(background)
         ) {
             WithTitleBarDirection {
@@ -132,11 +122,6 @@ val WindowState.isMinimizedOrNull: Boolean?
 @Composable
 fun isWindowMaximized(): Boolean {
     return LocalWindowState.current.placementOrNull == WindowPlacement.Maximized
-}
-
-@Composable
-fun isWindowFloating(): Boolean {
-    return LocalWindowState.current.placementOrNull == WindowPlacement.Floating
 }
 
 @Composable
@@ -428,7 +413,6 @@ fun CustomWindow(
                     windowIcon = icon,
                     background = background,
                     onBackground = myColors.onBackground,
-                    isLight = isLight,
                     start = start,
                     end = end,
                 ) {

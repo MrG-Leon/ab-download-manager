@@ -142,12 +142,6 @@ class AppComponent(
         }
     }
 
-    fun closeHome() {
-        scope.launch {
-            showHome.dismiss()
-        }
-    }
-
     @Serializable
     class HomePageConfig
 

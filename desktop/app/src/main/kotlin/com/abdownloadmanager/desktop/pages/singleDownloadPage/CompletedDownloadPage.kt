@@ -15,6 +15,7 @@ import androidx.compose.ui.draganddrop.DragAndDropTransferable
 import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.abdownloadmanager.desktop.actions.requestExitAction
 import com.abdownloadmanager.desktop.pages.home.DownloadItemTransferable
 import com.abdownloadmanager.shared.util.ui.icon.MyIcons
 import com.abdownloadmanager.shared.util.ui.myColors
@@ -88,10 +89,10 @@ private fun Actions(
                 myStringResource(Res.string.open),
                 modifier = Modifier,
                 onClick = {
-                    component.openFile()
+                    component.openFile(alsoClose = false)
                 },
                 onLongClick = {
-                    component.openFile(useChooser = true)
+                    component.openFile(alsoClose = false, useChooser = true)
                 }
             )
             Spacer(Modifier.width(8.dp))
@@ -99,7 +100,7 @@ private fun Actions(
                 myStringResource(Res.string.open_folder),
                 modifier = Modifier,
                 onClick = {
-                    component.openFolder()
+                    component.openFolder(alsoClose = false)
                 },
             )
             Spacer(Modifier.width(8.dp))
@@ -143,7 +144,9 @@ private fun Actions(
             ActionButton(
                 myStringResource(Res.string.close),
                 modifier = Modifier,
-                onClick = component::close,
+                // Same behavior as the main window close button / File -> Exit:
+                // fully terminate the application instead of only hiding the window.
+                onClick = requestExitAction::onClick,
             )
         }
     }

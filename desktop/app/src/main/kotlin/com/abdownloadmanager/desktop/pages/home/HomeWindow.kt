@@ -10,6 +10,7 @@ import androidx.compose.ui.window.v2.WindowPositionProvider
 import androidx.compose.ui.window.v2.WindowSizeProvider
 import androidx.compose.ui.window.v2.rememberWindowState
 import com.abdownloadmanager.desktop.AppComponent
+import com.abdownloadmanager.desktop.actions.requestExitAction
 import com.abdownloadmanager.desktop.utils.AppInfo
 import com.abdownloadmanager.desktop.window.custom.CustomWindow
 import com.abdownloadmanager.desktop.window.custom.isMinimizedOrNull
@@ -29,14 +30,19 @@ fun HomeWindow(
     appComponent: AppComponent,
 ) {
     appComponent.showHomeSlot.rememberChild()?.let {
-        HomeWindow(it, appComponent::closeHome)
+        HomeWindow(
+            homeComponent = it,
+            // Closing the main window (X) must fully exit the app,
+            // exactly like the "Exit" menu item, even when system tray is enabled.
+            onCloseRequest = requestExitAction::onClick,
+        )
     }
 }
 
 @Composable
 private fun HomeWindow(
     homeComponent: HomeComponent,
-    onCLoseRequest: () -> Unit,
+    onCloseRequest: () -> Unit,
 ) {
     val size by homeComponent.windowSize.collectAsState()
     val isMaximized by homeComponent.isMaximized.collectAsState()
@@ -64,7 +70,7 @@ private fun HomeWindow(
     ) {
         CustomWindow(
             state = windowState,
-            onCloseRequest = onCLoseRequest,
+            onCloseRequest = onCloseRequest,
             windowController = windowController,
             onKeyEvent = {
                 homeComponent.shortcutManager.handle(it)
